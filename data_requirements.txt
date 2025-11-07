@@ -1,0 +1,12 @@
+To Compute LVR we need:
+1. All pool updates (swaps, mints, burns) which we can use to 
+reconstruct pool reserves
+       - for uniswap v3, swap events also give amount0, amount1
+       sqrtPriceX96, liquidity, tick
+2. CEX price for risky asset
+3. fee tier of the pool 
+
+
+LVR: 
+
+(P_ref,j - P_AMM,j) * change_Q_j
