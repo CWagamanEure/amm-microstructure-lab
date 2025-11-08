@@ -52,6 +52,14 @@ with a real pool's spread to determine whether a pool is effectively
 allocating its liquidity.
     - Citation: [What Drives Liquidity on Decentralized Exchanges?](https://arxiv.org/html/2410.19107v2)
 
+## Notes on DEX Volatility
+One important consideration to make is the extent to which DEX volatility
+is made up of transitory versus fundamental volatility. Various research
+papers I have read seem to agree that less informed trading takes place
+on a DEX due to various factors that are a result of its design. The majority of the informed
+trading that does take place seems to come from CEX and DEX shipping arb
+which occurs as a result of transitory volatility driven pricing.
+
 ## Data Requirements
 
 ### To Compute LVR we need:
