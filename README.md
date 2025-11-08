@@ -33,11 +33,11 @@ have if you had just performed the HODL strategy.
 2. **Loss vs. Rebalancing**: The accrued shortfall between the value of the
 LP's position in the AMM vs. the value of an ideal *frictionless* portfolio
 that is continuously rebalancing at true market prices.
-    - Citation: [link text](https://arxiv.org/abs/2208.06046)
+    - Citation: [Automated Market Making and Loss-Versus-Rebalancing](https://arxiv.org/abs/2208.06046)
 3. **Rebalancing vs. Rebalancing**: The shortfall between LP performance
 vs. a practical CEX-style rebalancing strategy which accounts for 
 trading costs and other market frictions.
-    - Citation: [link text](https://arxiv.org/abs/2410.23404)
+    - Citation: [Rebalancing-versus-Rebalancing: Improving the fidelity of Loss-versus-Rebalancing](https://arxiv.org/abs/2410.23404)
 
 ### Metrics for measuring pool liquidity
 
@@ -50,7 +50,7 @@ minus transaction fees.
 3. **Counterfactual v2 Spread**: Used as a benchmark for comparison
 with a real pool's spread to determine whether a pool is effectively
 allocating its liquidity.
-    - Citation: [link text](https://arxiv.org/html/2410.19107v2)
+    - Citation: [What Drives Liquidity on Decentralized Exchanges?](https://arxiv.org/html/2410.19107v2)
 
 ## Data Requirements
 
