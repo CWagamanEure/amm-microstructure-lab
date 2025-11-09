@@ -3,8 +3,9 @@
 
 ## Intent
 The intent of this research project is to determine a realistic and 
-effective metric for measuring the adverse selection loss of  
-decentralized exchanges. A realistic metric would take the
+effective metric for measuring the transaction costs of being a maker on a decentralized exchange.
+This also will involve determining correlations and forecasting transaction costs,
+in order to gage a fundamental value band. A realistic metric would take the
 form of one which accounts for the various frictions that exist in trading
 itself, on top of those that are unique to trading in a decentralized
 capacity, where the liquidity provision involves LPs depositing
