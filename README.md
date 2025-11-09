@@ -115,11 +115,16 @@ aws managedblockchain create-accessor \
 
 ## So Far:
 
+### This chart shows the USDC/WETH midprice timeseries
+ - This will be useful for later computations of taker adverse selection
+
 ![USDC/WETH Mid Price Time Series](./figures/USDC-WETH_Mid_Price_from_Pool_Over_Time.png)
 
+### This chart shows trade run length distribution
 
 ![Distribution Run Length](./figures/Distribution_run_length.png)
 
+### By Side
 
 ![Distribution Run Length By Side](./figures/Distribution_run_length_by_side.png)
 
