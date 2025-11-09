@@ -116,3 +116,10 @@ aws managedblockchain create-accessor \
 ## So Far:
 
 ![USDC/WETH Mid Price Time Series](./figures/USDC-WETH_Mid_Price_from_Pool_Over_Time.png)
+
+
+![Distribution Run Length](./figures/Distribution_run_length.png)
+
+
+![Distribution Run Length By Side](./figures/Distribution_run_length_by_side.png)
+
