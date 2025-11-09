@@ -127,3 +127,6 @@ aws managedblockchain create-accessor \
 
 ![Distribution Run Length By Side](./figures/Distribution_run_length_by_side.png)
 
+
+### USDC/WETH midprice timeseries with order flow bursts (>100 consecutive)
+![USDC/WETH Mid Price with One Sided Order Flow Burst Bands](./figures/USDC-WETH_Mid_Price_One_Sided_Flow_Bursts.png)
