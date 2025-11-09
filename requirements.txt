@@ -1,4 +1,7 @@
 pandas
+pyspark
+web3
+dotenv
 numpy
 boto3
 torch

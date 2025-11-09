@@ -72,3 +72,35 @@ reconstruct pool reserves
 
 LVR = (P_ref,j - P_AMM,j) * change_Q_j
 
+
+
+## Setting Up AWS Blockchain RPC
+
+1. Set your proper AWS credentials using:
+```
+aws configure
+```
+2. Create the Ethereum Node (AMB Access), this returns a NodeId:
+```
+aws managedblockchain create-node \
+  --network-id n-ethereum-mainnet \
+  --node-configuration '{
+    "InstanceType": "bc.t3.xlarge",
+    "AvailabilityZone": <zone>
+  }'
+```
+3. Get the details of the NodeId, this returns an HttpEndpoint and WebSocketEndpoint:
+```
+aws managedblockchain get-node \
+  --network-id n-ethereum-mainnet \
+  --node-id <node-id> \
+  --query "Node.FrameworkAttributes.Ethereum"
+```
+4. Create an Accessor (billing token):
+```
+aws managedblockchain create-accessor \
+  --accessor-type BILLING_TOKEN
+```
+5. Build the RPC URL using node-id and billing token and place this into your .env:
+**https://<node-id-lowercase>.t.ethereum.managedblockchain.us-east-1.amazonaws.com?billingtoken=<BILLING_TOKEN>**
+

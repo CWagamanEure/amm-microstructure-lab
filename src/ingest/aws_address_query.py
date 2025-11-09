@@ -49,7 +49,7 @@ def list_events_for_tx(tx_hash, network, client, maxResults):
 
         
 def main(network, client, pool_address, max_results):
-    out_dir = Path("../data")
+    out_dir = Path("../data/raw")
 
     print("Listing transactions...")
     txs = list_pool_transactions(network, pool_address, max_results, client)
