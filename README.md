@@ -74,7 +74,7 @@ LVR = (P_ref,j - P_AMM,j) * change_Q_j
 
 
 
-## Setting Up AWS Blockchain RPC
+## Setting Up AWS Blockchain RPC (Not neccesary but useful for other work)
 
 1. Set your proper AWS credentials using:
 ```
@@ -103,4 +103,12 @@ aws managedblockchain create-accessor \
 ```
 5. Build the RPC URL using node-id and billing token and place this into your .env:
 **https://<node-id-lowercase>.t.ethereum.managedblockchain.us-east-1.amazonaws.com?billingtoken=<BILLING_TOKEN>**
+
+
+## Spinning up a Spark cluster on EMR with JupyterHub (Steps so I can remember later lol)
+
+1. Create EMR cluster (choose Spark and JupyterHub), just used m5.xlarge instances (master and configure)
+2. Find EMR primary node public DNS and on its master security group add new inbound rule:
+  - TCP 9443, my IP
+3. Search **https://<primary-dns>:9443/** in browser
 
