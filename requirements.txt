@@ -1,4 +1,6 @@
 pandas
+matplotlib
+seaborn
 pyspark
 web3
 dotenv

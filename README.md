@@ -112,3 +112,6 @@ aws managedblockchain create-accessor \
   - TCP 9443, my IP
 3. Search **https://\<primary-dns>:9443/** in browser
 
+## So Far:
+
+![USDC/WETH Mid Price Time Series](./figures/USDC-WETH_Mid_Price_from_Pool_Over_Time.png)
