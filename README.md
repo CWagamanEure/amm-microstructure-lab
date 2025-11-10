@@ -1,25 +1,19 @@
-# Measuring and Forecasting Adverse Selection Loss in DEXs
+# AMM Market Microstucture Lab
 **Currently ongoing research**
 
 ## Intent
-The intent of this research project is to determine a realistic and 
-effective metric for measuring the transaction costs of being a maker on a decentralized exchange.
-This also will involve determining correlations and forecasting transaction costs,
-in order to gage a fundamental value band. A realistic metric would take the
-form of one which accounts for the various frictions that exist in trading
-itself, on top of those that are unique to trading in a decentralized
-capacity, where the liquidity provision involves LPs depositing
-into pools and trading prices are determined through an algorithmic
-function.
+The purpose of this repo is to centralize my ongoing work in researching
+decentralized market microstructure, and how these markets compare to the dynamics
+so well documented in tradfi. 
 
-This project will also attempt to forecast LP loss to informed trading,
-which may be useful when implementing a temporal function market maker (TFMM),
-adjusting prices to avoid LP loss. 
+More specifically, this repo will include studies of various methods for
+measuring adverse selection, both on the maker and taker sides. On top of
+that, it will also include various ways for measuring Dex liquidity, and
+ways for determining whether a pool is efficiently distributing its liquidity across
+the pricing function.
 
-I will also explore how adverse selection and adverse selection forecasting
-are related statistically to the various metrics for measuring liquidity.
-
-## Past Methods and Literature
+Essentially, whatever I am learning and curious about will be attempted in
+this repo :).
 
 ### Measuring LP loss to Adverse Selection and other trading strategies
 Previous methods for measuring LP adverse selection loss have included impermanent loss (IL), loss vs. rebalancing (LVR),
