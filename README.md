@@ -124,3 +124,14 @@ aws managedblockchain create-accessor \
 
 ### USDC/WETH midprice timeseries with order flow bursts (>100 consecutive)
 ![USDC/WETH Mid Price with One Sided Order Flow Burst Bands](./figures/USDC-WETH_Mid_Price_One_Sided_Flow_Bursts.png)
+
+
+## Goals:
+
+  - **Forecasting Loss-Versus-Rebalancing**: 
+  - **Analyze liquidity distributions**: (liquidity surface) and how that changes over time
+  in response to price moves and trades. Also determine if liquidity ranges are indicative
+  of price movements (informed liquidity provision).
+      - tools: PCA, vector autoregression
+  - **Graph Based Transaction Network**:
+  - **Price Prediction using Transformer**:
