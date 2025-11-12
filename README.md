@@ -96,7 +96,7 @@ aws managedblockchain create-accessor \
 
 
 
-## Steps for forecasting LVR using 
+## Steps for forecasting LVR using HAR-RV 
 
 ### Base Features
 - block_timestamp
