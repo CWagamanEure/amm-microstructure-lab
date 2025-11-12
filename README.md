@@ -1,4 +1,4 @@
-# AMM Market Microstucture Lab (Accumulation of all my thoughts and ideas)
+# AMM Market Microstructure Lab 
 **Currently ongoing research**
 
 ## Intent
