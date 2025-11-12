@@ -55,19 +55,6 @@ on a DEX due to various factors that are a result of its design. The majority of
 trading that does take place seems to come from CEX and DEX shipping arb
 which occurs as a result of transitory volatility driven pricing.
 
-## Data Requirements
-
-### To Compute LVR we need:
-1. All pool updates (swaps, mints, burns) which we can use to 
-reconstruct pool reserves
-       - for uniswap v3, swap events also give amount0, amount1
-       sqrtPriceX96, liquidity, tick
-2. CEX price for risky asset
-3. fee tier of the pool 
-
-LVR = (P_ref,j - P_AMM,j) * change_Q_j
-
-
 
 ## Setting Up AWS Blockchain RPC (Not neccesary but useful for other work)
 
@@ -107,7 +94,106 @@ aws managedblockchain create-accessor \
   - TCP 9443, my IP
 3. Search **https://\<primary-dns>:9443/** in browser
 
-## So Far:
+
+
+## Steps for forecasting LVR using 
+
+### Base Features
+- block_timestamp
+- block_number
+- tx_hash
+- sqrtPriceX96
+- tick
+- liquidity
+- amount0, amount1
+- sender, recipient
+- event_type 
+- external_fair_price (CEX Mid) **idk where I am getting this for free**
+
+### Derived Features 
+
+#### 1. Pool mid price
+
+From Uniswap v3 sqrt price:
+
+$$
+P_{\text{pool},t}
+= \left(\frac{\text{sqrtPriceX96}_t}{2^{96}}\right)^2
+\cdot \frac{\text{token1 units}}{\text{token0 units}}
+$$
+
+(Adjusted so that \(P_{\text{pool},t}\) is quoted in the same units as \(P_{\text{ref},t}\).)
+
+#### 2. Intraday log returns (from reference price)
+
+For sampling interval \(\Delta\):
+
+$$
+r_t = \ln P_{\text{ref},t} - \ln P_{\text{ref},t-\Delta}
+= \ln\!\left(\frac{P_{\text{ref},t}}{P_{\text{ref},t-\Delta}}\right)
+$$
+
+#### 3. Daily realized variance
+
+For each day \(d\), using all intraday returns on that day:
+
+$$
+RV_d = \sum_{t \in d} r_t^2
+$$
+
+This is the realized variance of the external fair price, used as a volatility regressor.
+
+---
+
+### 4. Daily realized LVR (Target)
+
+We proxy **realized LVR** as the total arbitrage profit (LP loss) per unit liquidity.
+
+1. **Flag arbitrage swaps**: swaps that move the pool price toward the reference price:
+
+$$
+|P_{\text{pool,post},i} - P_{\text{ref},i}|
+<
+|P_{\text{pool,pre},i} - P_{\text{ref},i}|
+$$
+
+2. **Per-swap LP loss / arb profit**:
+
+Let \(\Delta Q_i\) be the traded quantity of the base asset, and
+\(P_{\text{pool},i}^{avg}\) the swap’s average execution price (from `amount_in/amount_out` or mid of pre/post):
+
+$$
+\text{LVR}_i \approx (P_{\text{ref},i} - P_{\text{pool},i}^{avg}) \cdot \Delta Q_i
+$$
+
+(sign chosen so positive = loss to LPs / profit to arb).
+
+3. **Aggregate by day**:
+
+Nominal LVR:
+
+$$
+LVR^{\text{nominal}}_d = \sum_{i \in d} \text{LVR}_i
+$$
+
+Normalize by average daily liquidity \(liq_d\):
+
+$$
+LVR^{\text{per-unit}}_d = \frac{LVR^{\text{nominal}}_d}{liq_d}
+$$
+
+We model and forecast \(LVR^{\text{per-unit}}_d\) using realized variance and the microstructure features above.
+
+
+### What is HAR-VAR and why did we choose it?
+
+Expected LVR in AMMs is essentially an increasing function of future quadratic variation. This means that 
+forecasting LVR largely reduces to forecasting realized variance in a way that also respects its time-scale
+structure. The HAR-RV model fits here because it decomposes realized volatility into daily, weekly, and monthly
+components, which is able to capture the long-memory behavior that drives LP risk.
+
+
+## Other work done so far:
 
 ### USDC/WETH midprice timeseries
  - This will be useful for later computations of taker adverse selection
@@ -135,3 +221,17 @@ aws managedblockchain create-accessor \
       - tools: PCA, vector autoregression
   - **Graph Based Transaction Network**:
   - **Price Prediction using Transformer**:
+  
+
+## Notes:
+  
+### MEV Solutions
+  - MEV tax allows apps to capture priority fee for their own benefit 
+
+## Sources
+
+[Automated Market Making and Loss-Versus-Rebalancing](https://arxiv.org/abs/2208.06046)
+[Rebalancing-versus-Rebalancing: Improving the fidelity of Loss-versus-Rebalancing](https://arxiv.org/abs/2410.23404)
+[What Drives Liquidity on Decentralized Exchanges?](https://arxiv.org/html/2410.19107v2)
+[Priority is all you need](https://www.paradigm.xyz/2024/06/priority-is-all-you-need)
+
