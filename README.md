@@ -122,7 +122,6 @@ P_{\text{pool},t}
 \cdot \frac{\text{token1 units}}{\text{token0 units}}
 $$
 
-(Adjusted so that \(P_{\text{pool},t}\) is quoted in the same units as \(P_{\text{ref},t}\).)
 
 #### 2. Intraday log returns (from reference price)
 
