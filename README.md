@@ -197,18 +197,18 @@ components, which is able to capture the long-memory behavior that drives LP ris
 ### USDC/WETH midprice timeseries
  - This will be useful for later computations of taker adverse selection
 
-![USDC/WETH Mid Price Time Series](./figures/USDC-WETH_Mid_Price_from_Pool_Over_Time.png)
+![USDC/WETH Mid Price Time Series](./figures/side-corr/USDC-WETH_Mid_Price_from_Pool_Over_Time.png)
 
 ### USDC/WETH trade run length distribution
 
-![Distribution Run Length](./figures/Distribution_run_length.png)
+![Distribution Run Length](./figures/side-corr/Distribution_run_length.png)
 
 
-![Distribution Run Length By Side](./figures/Distribution_run_length_by_side.png)
+![Distribution Run Length By Side](./figures/side-corr/Distribution_run_length_by_side.png)
 
 
 ### USDC/WETH midprice timeseries with order flow bursts (>100 consecutive)
-![USDC/WETH Mid Price with One Sided Order Flow Burst Bands](./figures/USDC-WETH_Mid_Price_One_Sided_Flow_Bursts.png)
+![USDC/WETH Mid Price with One Sided Order Flow Burst Bands](./figures/side-corr/USDC-WETH_Mid_Price_One_Sided_Flow_Bursts.png)
 
 
 ## Goals:
