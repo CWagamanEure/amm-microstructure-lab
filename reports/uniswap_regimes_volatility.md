@@ -256,3 +256,154 @@ $$
 
 Before applying KMeans, I standardize each component of $x_t$ to zero mean and unit variance. This prevents features with large numerical scales (such as liquidity or volume) from dominating the clustering purely due to their units, and encourages the algorithm to group hours based on genuine structure rather than raw magnitudes.
 
+
+## Clustering Methodology
+
+The goal of the clustering step is to group hours with similar microstructure states
+in a small number of regimes. I use KMeans on the standardized feature vectors defined above.
+
+### KMeans Specification
+
+I use the standard KMeans algorithm as implemented in scikit-learn. The model minimizes
+the within-cluster sum of squared distances ("inertia") between each point and
+the assigned centroid.
+
+Key Settings:
+
+- **Distance metric:** Euclidean distance in the standardized feature space.
+- **Initialization:** multiple random centroid initializations to reduce
+sensitivity to starting points.
+- **Max iterations:** a fixed cap with early stopping.
+- **Random seed:** fixed `random_state` for reproducability.
+
+### Choosing the Number of Clusters
+
+To select the number of regimes, I estimate KMeans solutions for \(k \in \{2,3,4,5,6\}\)
+and evaluate each using two diagnostics:
+
+- **Inertia (within-cluster SSE):** decreases as \(k\) increases. I look at the
+"elbow" in the interia-versus-\(k\) curve to see where additional clusters result in
+diminishing returns in fit. 
+- **Silhouette score:** measures how well-separated clusters are, taking values in
+\([-1,1]\) where higher is better. For each \(k\), I compute the mean silhouette 
+score across all points.
+
+In my result, \(k=3\) gives a reasonable trade-off because it lies near the elbow in
+the inertia curve and also has the highest average silhouette score among the values
+that were tested. This suggests that three regimes are the most compact and separated.
+
+![KMeans Inertia vs K](./figures/regime-class/KMeansInertiavsK.png)
+
+![KMeans Silhouette vs K](./figures/regime-class/KMeansSilhvsK.png)
+
+
+### Stability Across Random Initializations
+
+KMeans can be sensitive to initialization. To ensure that the three-regime solution
+is not a result of a particular random seed, I refit the model multiple times using
+different seeds and compare the resulting labelings using the **adjusted Rand index (ARI)**.
+
+- I run KMeans \(N\) times on the same standardized data.
+- For each run I compute the ARI between their cluster labels.
+- I then am able to summarize distribution of ARIs across all pairs (mean and std).
+
+In my experiments, the mean ARI between runs is high, which shows that \(k=3\) solution
+is reasonably stable to different initializations and that the discovered regimes are
+not pure noise from optimization.
+
+## Regime Characterization and Interpretation
+
+After fitting KMeans with \(k = 3\) on the standardized state vectors, I interpret
+each cluster as a distinct liquidity/volatility regime for the USDC-WETH pool.
+
+To make the regimes easier to reason about, I map the raw labels to descrptive names.
+
+- **normal-calm** - baseline conditions
+- **high_vol_breakout** - high realized volatility and heavy trading
+- **deep_liquidity_reconfig** - rare episodes with unusually large liquidity and
+LP activity
+
+### Descriptive Statstics by Regime
+
+To summarize the regimes, I compute the mean of each microstructure feature
+for each cluster.
+
+Very roughly:
+
+- **normal_calm**
+  - Lowest 24h realized vol
+  - Moderate hourly volume and swap counts
+  - "Normal" liquidity levels and relatively low liquidity vol
+  - Low to moderate LP event count
+
+- **high_vol_breakout**
+  - 24h realized vol is more than twice that of normal_calm
+  - hourly USD volume is several times higher than norma_calm
+  - Liquidity levels are similar or slightly higher than normal_calm, but pool
+  is being traded through much more intensely.
+  - LP event counts are also higher
+
+- **deep_liquidity_reconfig**
+  - Realized vol is not as extreme as high_vol_breakout, but on-chain liquidity
+  levels are an order of magnitude larger
+  - Liquidity vol is elevated
+  - LP event count are relatively high even with regime being rare
+  - Interpretation: episodes where large LPs move in or out, or tick distribution
+  is being largely reconfigured.
+
+### Separation in PCA Space
+
+To visualize how distinct the regimes are in the feature space, I project the 
+standardized vectors onto the first two principal components and color points by regime
+labels. We can see:
+
+- **normal_calm** hours concentrated in a tight, low-variance cloud.
+- **high_vol_breakout** hours fanning out along directions associated with higher vol
+- **deep_liquidity_reconfig** hours occupying a smaller, more extreme region
+associated with very high liquidity and liquidity vol.
+
+Note that the clusters  are not perfectly linearly separable, but the PCA plot
+suggests that the regimes capture meaningful structure and not pure noise.
+
+![Regimes in PCA Space](./figures/regime-class/RegimesInPCA.png)
+
+
+
+### Time-Series View: When do regimes occur?
+
+Next, I overlay the regime labels on the original price series and on 24h realized vol:
+
+- On the **price chart**, high_vol_breakout points tend to cluster around large
+directional moves and local tops/bottoms. normal_calm dominates long stretches of 
+relatively stable price movements. deep_liquidity_reconfig appears in short bursts,
+typically around periods of drastic changes in on-chain liquidity.
+
+- On the **24h realized vol chart**, high_vol_breakout lines up with the tallest
+vol soikes, while normal_calm fills in the low-vol background. deep_liquidity_reconfig
+typically occurs in transitions in vol instead of at the very peak.
+
+These plots help show that KMeans regimes correspond to recognizable phases in
+microstructure changes rather than arbitrary partitions of data.
+
+![Time-Series Price With Regimes](./figures/regime-class/PriceWithKMeansRegimes.png)
+
+
+![Time-Series Vol With Regimes](./figures/regime-class/24hRealizedVolWithRegimes.png)
+
+### Regimes and Return Distribution
+
+Finally, I look at how simple future returns act across regimes. For each regime
+I compute the mean and standard deviation of next-hour returns. I find:
+
+- **normal_calm** has the lowest vol of forward returns and slightly negative mean.
+- **high_vol_breakout** has the highest vol of forward returns and a more negative
+mean as you would expect from turbulent periods.
+- **deep_liquidity_reconfig** is rare but is also associated with relatively large 
+forward-return vol, consistent with the idea that major liquidity events tend
+to occur across interesting times for price.
+
+These differences are not enough to claim a tradable edge by themselves, but they 
+do suggest that the clustering is finding real variation in the distribution
+of future outcomes.
+
+
