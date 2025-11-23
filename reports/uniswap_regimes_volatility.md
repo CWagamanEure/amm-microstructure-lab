@@ -109,22 +109,30 @@ Given the hourly panel, I construct a set of microstructure features which are i
 
 ### Price, Returns, and Realized Vol
 
-Let $P_t$ denote the hourly close price of WETH in units of USDC (USDC per 1 WETH), derived from the Uniswap v3 `sqrtPriceX96` field and token decimals. I work with log prices and log returns:
+Let $P_t$ denote the hourly close price of WETH in units of USDC (USDC per 1 WETH), derived from the Uniswap v3 `sqrtPriceX96` field and token decimals. I work with log prices and log returns.
 
-Log price:  
-$\ell_t = \log P_t$
+Log price:
 
-1-hour log return:  
-$r_t = \ell_t - \ell_{t-1}$
+$$
+\ell_t = \log P_t
+$$
 
-From these returns I construct simple realized volatility measures over rolling windows:
+1-hour log return:
 
-4-hour realized volatility:  
+$$
+r_t = \ell_t - \ell_{t-1}
+$$
+
+From these returns I construct simple realized volatility measures over rolling windows.
+
+4-hour realized volatility:
+
 $$
 \mathrm{RV}^{(4h)}_t = \sqrt{\sum_{k=0}^{3} r_{t-k}^2}
 $$
 
-24-hour realized volatility:  
+24-hour realized volatility:
+
 $$
 \mathrm{RV}^{(24h)}_t = \sqrt{\sum_{k=0}^{23} r_{t-k}^2}
 $$
@@ -133,14 +141,16 @@ These are equivalent to standard realized volatility measures used in high-frequ
 
 ### Trend: Moving Averages and MA Ratio
 
-To capture slow versus fast prixe movement I compute the simple moving averages of the hourly close:
+To capture slow versus fast prixe movement I compute the simple moving averages of the hourly close.
 
-4-hour moving average:  
+4-hour moving average:
+
 $$
 \mathrm{MA}^{(4h)}_t = \frac{1}{4} \sum_{k=0}^{3} P_{t-k}
 $$
 
-24-hour moving average:  
+24-hour moving average:
+
 $$
 \mathrm{MA}^{(24h)}_t = \frac{1}{24} \sum_{k=0}^{23} P_{t-k}
 $$
@@ -148,20 +158,21 @@ $$
 I then define a moving-average ratio as a scale-free trend indicator:
 
 $$
-R^{\mathrm{MA}}_t = \frac{\mathrm{MA}^{(4h)}_t}{\mathrm{MA}^{(24h)}_t}.
+\mathrm{MA\_ratio}_t = \frac{\mathrm{MA}^{(4h)}_t}{\mathrm{MA}^{(24h)}_t}.
 $$
 
-In the code, this quantity is stored in the column `ma_ratio`. The values near one show short and long-horizon averages agree, while deviations above or below 1 show short-term moves away from the longer-run level.
+The values near one show short and long-horizon averages agree, while deviations above or below 1 show short-term moves away from the longer-run level.
 
 ### Trading Activity: Volume and Swap Counts
 
-For each hour, I summarize swap activity into volume and counts:
+For each hour, I summarize swap activity into volume and counts.
 
 Hourly USD volume $\mathrm{Vol}^{(1h)}_t$: sum of absolute traded notional, computed by converting both legs of each swap into USDC using the prevailing pool price and summing over all swaps in the hour.
 
 Swap count: the number of swaps in the hour.
 
-Average trade size in USD:  
+Average trade size in USD:
+
 $$
 \mathrm{AvgTradeSize}_t =
 \begin{cases}
@@ -174,21 +185,24 @@ These features capture how “busy” the pool is and the typical size of trades
 
 ### Liquidity Level and Liquidity Volatility
 
-On Uniswap v3, the on-chain `liquidity` field reflects the amount of active liquidity in the current price range. For each hour I compute:
+On Uniswap v3, the on-chain liquidity field reflects the amount of active liquidity in the current price range. For each hour I compute:
 
 Liquidity level: last observed on-chain liquidity in the hour, denoted $\mathrm{Liq}_t$.
 
-Absolute liquidity change:  
+Absolute liquidity change:
+
 $$
 \Delta \mathrm{Liq}_t = \mathrm{Liq}_t - \mathrm{Liq}_{t-1}.
 $$
 
-Relative liquidity change (when $\mathrm{Liq}_{t-1} > 0$):  
+Relative liquidity change (when $\mathrm{Liq}_{t-1} > 0$):
+
 $$
 \Delta \mathrm{Liq}^{(\mathrm{rel})}_t = \frac{\mathrm{Liq}_t - \mathrm{Liq}_{t-1}}{\mathrm{Liq}_{t-1}}.
 $$
 
-24-hour liquidity volatility: a rolling standard deviation of relative changes:  
+24-hour liquidity volatility: a rolling standard deviation of relative changes:
+
 $$
 \mathrm{LiqVol}^{(24h)}_t =
 \mathrm{StdDev}\left( \Delta \mathrm{Liq}^{(\mathrm{rel})}_{t-k} \right)_{k=0}^{23}.
@@ -198,7 +212,7 @@ Intuitively, $\mathrm{Liq}_t$ measures how deep the pool is at time $t$, while $
 
 ### LP Activity: Mint/Burn Events and Net Flows
 
-From the mint and burn events I construct LP flow features:
+From the mint and burn events I construct LP flow features.
 
 Mint and burn counts:
 
@@ -207,16 +221,18 @@ Mint and burn counts:
 
 Token amounts (hourly sums):
 
-- $\mathrm{MintAmt0}_t, \mathrm{MintAmt1}_t$: total token0/token1 supplied by LPs.  
-- $\mathrm{BurnAmt0}_t, \mathrm{BurnAmt1}_t$: total token0/token1 withdrawn.
+- $\mathrm{MintAmt0}_t$, $\mathrm{MintAmt1}_t$: total token0/token1 supplied by LPs.  
+- $\mathrm{BurnAmt0}_t$, $\mathrm{BurnAmt1}_t$: total token0/token1 withdrawn.
 
-Net LP flow per token:  
+Net LP flow per token:
+
 $$
 \mathrm{NetAmt0}_t = \mathrm{MintAmt0}_t - \mathrm{BurnAmt0}_t, \quad
 \mathrm{NetAmt1}_t = \mathrm{MintAmt1}_t - \mathrm{BurnAmt1}_t.
 $$
 
-Total LP event count:  
+Total LP event count:
+
 $$
 \mathrm{LPEventCount}_t = \mathrm{MintCount}_t + \mathrm{BurnCount}_t.
 $$
@@ -230,7 +246,7 @@ In the clustering step, I focus on a subset of these features that jointly descr
 $$
 x_t = \big(
 \mathrm{RV}^{(24h)}_t,\ 
-R^{\mathrm{MA}}_t,\ 
+\mathrm{MA\_ratio}_t,\ 
 \mathrm{Vol}^{(1h)}_t,\ 
 \mathrm{Liq}_t,\ 
 \mathrm{LiqVol}^{(24h)}_t,\ 
