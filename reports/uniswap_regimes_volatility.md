@@ -406,7 +406,6 @@ These differences are not enough to claim a tradable edge by themselves, but the
 do suggest that the clustering is finding real variation in the distribution
 of future outcomes.
 
-
 ## Predictive Tests: Do Regimes Help Forecast Volatility?
 
 The clustering so far is purely unsupervised, meaning that regimes are defined without actually
@@ -419,7 +418,11 @@ Let $\mathrm{RV}^{(24h)}_t$ denote the 24-hour realized vol computed from hourly
 time $t$, as defined earlier. I construct a forward-looking target by shifting the series one step
 ahead:
 
-$$ \mathrm{RV}^{(24h)}_{t+1} = \mathrm{RV}^{(24h)}_{\text{next 24 hours}}. $$
+$$
+\mathrm{RV}^{(24h)}_{t+1}
+=
+\mathrm{RV}^{(24h)}_{\text{next 24 hours}}.
+$$
 
 In the data this is stored as `rv_24h_fwd`.
 
@@ -436,7 +439,7 @@ $$
 = \alpha + \beta \,\mathrm{RV}^{(24h)}_t
 + \gamma_1 D^{(1)}_t
 + \gamma_2 D^{(2)}_t
-+ \varepsilon_t.
++ \varepsilon_t,
 $$
 
 where $D^{(1)}_t$ and $D^{(2)}_t$ are dummy variables for two of the regimes, and the omitted
@@ -448,7 +451,9 @@ As a benchmark, I also regress forward 24h realized vol on current 24h realized 
 
 $$
 \mathrm{RV}^{(24h)}_{t+1}
-= \alpha_{\text{base}} + \beta_{\text{base}} \, \mathrm{RV}^{(24h)}_t + \varepsilon_t.
+= \alpha_{\text{base}}
++ \beta_{\text{base}} \,\mathrm{RV}^{(24h)}_t
++ \varepsilon_t.
 $$
 
 This captures the usual “volatility clustering” effect: high volatility today tends to be followed
@@ -471,16 +476,14 @@ $$
 Here $D^{(1)}_t$ is the dummy for the `high_vol_breakout` regime and $D^{(2)}_t$ is the dummy
 for the `deep_liquidity_reconfig` regime, with `normal_calm` as the omitted baseline.
 
-where `normal_calm` is the omitted baseline regime.
-
 Empirically, I find:
 
 - The coefficient on current volatility $\beta$ remains large and highly significant: volatility
   clustering is still the main driver.
-- The dummy for **high_vol_breakout** has a positive and statistically significant coefficient,
+- The dummy for **high\_vol\_breakout** has a positive and statistically significant coefficient,
   showing that, controlling for the current level of volatility, being in a breakout regime
   is associated with higher forward realized volatility.
-- The dummy for **deep_liquidity_reconfig** is much weaker and statistically less robust,
+- The dummy for **deep\_liquidity\_reconfig** is much weaker and statistically less robust,
   consistent with that regime being rare and more about liquidity repositioning than just
   volatility spikes.
 - The overall R-squared of the model increases modestly relative to the baseline (by roughly
@@ -494,10 +497,10 @@ I compute the mean, standard deviation, and count of $r_{t+1}$, the log return o
 
 In my results:
 
-- **normal_calm** shows the lowest forward-return vol and a slightly negative mean.
-- **high_vol_breakout** has the highest forward-return vol and a more negative mean, which is
+- **normal\_calm** shows the lowest forward-return vol and a slightly negative mean.
+- **high\_vol\_breakout** has the highest forward-return vol and a more negative mean, which is
   consistent with turbulent conditions where large moves are much more likely.
-- **deep_liquidity_reconfig** is once again associated with relatively high forward-return vol,
+- **deep\_liquidity\_reconfig** is once again associated with relatively high forward-return vol,
   but the estimates are very noisy because the regime is much more rare.
 
 These differences are not enough to claim a trading signal, but they capture the idea that the
@@ -516,10 +519,10 @@ The main findings are:
   - `high_vol_breakout` state during turbulent periods  
   - `deep_liquidity_reconfig` state associated with large shifts in on-chain liquidity  
 - In simple linear regression, most of the explained variation in forward 24h realized vol still
-  comes from standard volatility clustering, but the **high_vol_breakout** regime adds a modest and
+  comes from standard volatility clustering, but the **high\_vol\_breakout** regime adds a modest and
   statistically significant increment. Being in this regime today is associated with higher vol
   tomorrow, even after accounting for the current volatility level.
-- The **deep_liquidity_reconfig** regime seems to capture large changes in the pool’s liquidity
+- The **deep\_liquidity\_reconfig** regime seems to capture large changes in the pool’s liquidity
   instead of just spikes in volatility, and its incremental predictive power for volatility alone
   is limited in this simple setup.
 
