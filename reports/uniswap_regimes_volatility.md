@@ -245,7 +245,7 @@ In the clustering step, I focus on a subset of these features that jointly descr
 volatility, trading intensity, depth, and LP activity. The **microstructure state
 vector** for each hour \(t\) is:
 
-\[
+$$
 x_t = \big(
 \text{RV}^{(24h)}_t,\ 
 \text{MA\_ratio}_t,\ 
@@ -254,7 +254,7 @@ x_t = \big(
 \text{LiqVol}^{(24h)}_t,\ 
 \text{LPEventCount}_t
 \big).
-\]
+$$
 
 Before applying KMeans, I standardize each component of \(x_t\) to zero mean and unit variance.
 This prevents features with large numerical scales (such as liquidity or volume) from
