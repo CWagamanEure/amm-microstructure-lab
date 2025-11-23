@@ -15,7 +15,7 @@ volatility or LVR models in calm periods vs high-volatility breakout periods.
 
 ## Background
 
-Unsiwap is a family of decentralized exchanges (DEXs) built on automated market
+Uniswap is a family of decentralized exchanges (DEXs) built on automated market
 makers (AMMs) rather than more computationally expensive order books. Prices are
 determined by a constant-function invariant that maps the pool's token reserves
 to a swap price. Uniswap v3 introduces **concentrated liquidity**, which allows
@@ -23,14 +23,14 @@ users to select custom price ranges (ticks) over which their liquidity is active
 This design greatly improves capital efficiency but also makes LP risk much more
 complex, since only in-range liquidity earns fees and is exposed to price moves.
 
-Alongside familiar issues in TradFi like frontrunning and sandwhich attacks, concentrated
-liquidity AMMs expose LPs to newer formns of adverse-selection risk known as 
+Alongside familiar issues in TradFi like frontrunning and sandwich attacks, concentrated
+liquidity AMMs expose LPs to newer forms of adverse-selection risk known as 
 **Loss-Versus-Rebalancing (LVR)**. LVR is the difference between (i) the value
 of a passive LP position in the pool and (ii) the value of a "rebalancing" portfolio
 that trades at external market prices to maintain the same notional exposure.
 It can be interpreted as an upper bound on the value that CEX-DEX arbitrageurs can
 extract from the pool, and a lower bound on the hidden cost borne by LPs due to 
-information assymetry and latency.
+information asymetry and latency.
 
 Because LVR is tightly linked to price volatility and the amount and shape of
 liquidity in the pool, it is natural to ask whether we can identify recurring
@@ -51,6 +51,9 @@ All timestamps are converted from block time to UTC datetime and then resampled
 on a fixed 1-hour grid. Hours with no on-chain activity are retained in the panel
 to avoid survivorship bias and to keep downstream rolling-window calculations
 well-defined.
+
+The sample runs from 2021-05-07 to 2023-05-01, giving 17,399 hourly
+observations after cleaning.
 
 ### From Raw Events to an Hourly Panel
 
@@ -93,7 +96,7 @@ After parsing, I set the timestamp as the index and resample to 1-hour frequency
   - For **flow variables** such as volume, swap counts, or LP mints/burns, I set the
   hourly values to zero when there are no events. 
   - After these steps, I drop only those rows that are missing values required
-  for rolling-window calculations (first few hours when computing reallized vol).
+  for rolling-window calculations (first few hours when computing realized vol).
 
   The result is a contiguous hourly panel where each row corresponds to a well-defined
   microstructure state of the USDC-WETH pool, and where both "quiet" hours and "active"
@@ -141,7 +144,7 @@ These are equivalent to standard realized volatility measures used in high-frequ
 
 ### Trend: Moving Averages and MA Ratio
 
-To capture slow versus fast prixe movement I compute the simple moving averages of the hourly close.
+To capture slow versus fast price movement I compute the simple moving averages of the hourly close.
 
 4-hour moving average:
 
