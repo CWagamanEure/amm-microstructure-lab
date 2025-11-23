@@ -419,11 +419,7 @@ Let $\mathrm{RV}^{(24h)}_t$ denote the 24-hour realized vol computed from hourly
 time $t$, as defined earlier. I construct a forward-looking target by shifting the series one step
 ahead:
 
-$$
-\mathrm{RV}^{(24h)}_{t+1}
-=
-\mathrm{RV}^{(24h)}_{\text{next 24 hours}}.
-$$
+$$ \mathrm{RV}^{(24h)}_{t+1} = \mathrm{RV}^{(24h)}_{\text{next 24 hours}}. $$
 
 In the data this is stored as `rv_24h_fwd`.
 
@@ -435,11 +431,7 @@ For each hour $t$, the predictors are:
 
 I then estimate a simple linear regression of the form:
 
-$$
-\mathrm{RV}^{(24h)}_{t+1}
-= \alpha + \beta \, \mathrm{RV}^{(24h)}_t
-+ \gamma_1 \, D^{(1)}_t + \gamma_2 \, D^{(2)}_t + \varepsilon_t,
-$$
+$$ \mathrm{RV}^{(24h)}_{t+1} = \alpha + \beta \, \mathrm{RV}^{(24h)}_t + \gamma_1 \, D^{(\text{high\_vol\_breakout})}_t + \gamma_2 \, D^{(\text{deep\_liquidity\_reconfig})}_t + \varepsilon_t. $$
 
 where $D^{(1)}_t$ and $D^{(2)}_t$ are dummy variables for two of the regimes, and the omitted
 regime is the baseline.
