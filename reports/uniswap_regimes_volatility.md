@@ -419,9 +419,7 @@ time $t$, as defined earlier. I construct a forward-looking target by shifting t
 ahead:
 
 $$
-\mathrm{RV}^{(24h)}_{t+1}
-=
-\mathrm{RV}^{(24h)}_{\text{next 24 hours}}.
+\mathrm{RV}^{(24h)}_{t+1} = \mathrm{RV}^{(24h)}_{\text{next 24 hours}}.
 $$
 
 In the data this is stored as `rv_24h_fwd`.
@@ -439,11 +437,11 @@ $$
 = \alpha + \beta \,\mathrm{RV}^{(24h)}_t
 + \gamma_1 D^{(1)}_t
 + \gamma_2 D^{(2)}_t
-+ \varepsilon_t,
++ \varepsilon_t.
 $$
 
-where $D^{(1)}_t$ and $D^{(2)}_t$ are dummy variables for two of the regimes, and the omitted
-regime is the baseline.
+Here $D^{(1)}_t$ and $D^{(2)}_t$ are dummy variables for two of the regimes, and the omitted regime
+is the baseline.
 
 ### Baseline: Vol Clustering Only
 
@@ -480,10 +478,10 @@ Empirically, I find:
 
 - The coefficient on current volatility $\beta$ remains large and highly significant: volatility
   clustering is still the main driver.
-- The dummy for **high\_vol\_breakout** has a positive and statistically significant coefficient,
+- The dummy for **high_vol_breakout** has a positive and statistically significant coefficient,
   showing that, controlling for the current level of volatility, being in a breakout regime
   is associated with higher forward realized volatility.
-- The dummy for **deep\_liquidity\_reconfig** is much weaker and statistically less robust,
+- The dummy for **deep_liquidity_reconfig** is much weaker and statistically less robust,
   consistent with that regime being rare and more about liquidity repositioning than just
   volatility spikes.
 - The overall R-squared of the model increases modestly relative to the baseline (by roughly
@@ -497,10 +495,10 @@ I compute the mean, standard deviation, and count of $r_{t+1}$, the log return o
 
 In my results:
 
-- **normal\_calm** shows the lowest forward-return vol and a slightly negative mean.
-- **high\_vol\_breakout** has the highest forward-return vol and a more negative mean, which is
+- **normal_calm** shows the lowest forward-return vol and a slightly negative mean.
+- **high_vol_breakout** has the highest forward-return vol and a more negative mean, which is
   consistent with turbulent conditions where large moves are much more likely.
-- **deep\_liquidity\_reconfig** is once again associated with relatively high forward-return vol,
+- **deep_liquidity_reconfig** is once again associated with relatively high forward-return vol,
   but the estimates are very noisy because the regime is much more rare.
 
 These differences are not enough to claim a trading signal, but they capture the idea that the
