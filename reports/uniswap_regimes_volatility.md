@@ -99,7 +99,7 @@ After parsing, I set the timestamp as the index and resample to 1-hour frequency
   microstructure state of the USDC-WETH pool, and where both "quiet" hours and "active"
   hours are represented.
 
-## Feature Enginering
+## Feature Engineering
 
 Given the hourly panel, I construct a set of microstructure features which are intended to summarize the "current state" of the USDC-WETH pool in each hour. These features are under three main categories:
 
@@ -282,7 +282,7 @@ To select the number of regimes, I estimate KMeans solutions for \(k \in \{2,3,4
 and evaluate each using two diagnostics:
 
 - **Inertia (within-cluster SSE):** decreases as \(k\) increases. I look at the
-"elbow" in the interia-versus-\(k\) curve to see where additional clusters result in
+"elbow" in the inertia-versus-\(k\) curve to see where additional clusters result in
 diminishing returns in fit. 
 - **Silhouette score:** measures how well-separated clusters are, taking values in
 \([-1,1]\) where higher is better. For each \(k\), I compute the mean silhouette 
@@ -316,14 +316,14 @@ not pure noise from optimization.
 After fitting KMeans with \(k = 3\) on the standardized state vectors, I interpret
 each cluster as a distinct liquidity/volatility regime for the USDC-WETH pool.
 
-To make the regimes easier to reason about, I map the raw labels to descrptive names.
+To make the regimes easier to reason about, I map the raw labels to descriptive names.
 
-- **normal-calm** - baseline conditions
-- **high_vol_breakout** - high realized volatility and heavy trading
-- **deep_liquidity_reconfig** - rare episodes with unusually large liquidity and
+- **normal_calm** (regime 0) - baseline conditions
+- **high_vol_breakout** (regime 1) - high realized volatility and heavy trading
+- **deep_liquidity_reconfig** (regime 2) - rare episodes with unusually large liquidity and
 LP activity
 
-### Descriptive Statstics by Regime
+### Descriptive Statistics by Regime
 
 To summarize the regimes, I compute the mean of each microstructure feature
 for each cluster.
@@ -338,7 +338,7 @@ Very roughly:
 
 - **high_vol_breakout**
   - 24h realized vol is more than twice that of normal_calm
-  - hourly USD volume is several times higher than norma_calm
+  - hourly USD volume is several times higher than normal_calm
   - Liquidity levels are similar or slightly higher than normal_calm, but pool
   is being traded through much more intensely.
   - LP event counts are also higher
@@ -379,7 +379,7 @@ relatively stable price movements. deep_liquidity_reconfig appears in short burs
 typically around periods of drastic changes in on-chain liquidity.
 
 - On the **24h realized vol chart**, high_vol_breakout lines up with the tallest
-vol soikes, while normal_calm fills in the low-vol background. deep_liquidity_reconfig
+vol spikes, while normal_calm fills in the low-vol background. deep_liquidity_reconfig
 typically occurs in transitions in vol instead of at the very peak.
 
 These plots help show that KMeans regimes correspond to recognizable phases in
