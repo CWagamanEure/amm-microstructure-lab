@@ -292,9 +292,9 @@ In my result, \(k=3\) gives a reasonable trade-off because it lies near the elbo
 the inertia curve and also has the highest average silhouette score among the values
 that were tested. This suggests that three regimes are the most compact and separated.
 
-![KMeans Inertia vs K](./figures/regime-class/KMeansInertiavsK.png)
+![KMeans Inertia vs K](../figures/regime-class/KMeansInertiavsK.png)
 
-![KMeans Silhouette vs K](./figures/regime-class/KMeansSilhvsK.png)
+![KMeans Silhouette vs K](../figures/regime-class/KMeansSilhvsK.png)
 
 
 ### Stability Across Random Initializations
@@ -365,7 +365,7 @@ associated with very high liquidity and liquidity vol.
 Note that the clusters  are not perfectly linearly separable, but the PCA plot
 suggests that the regimes capture meaningful structure and not pure noise.
 
-![Regimes in PCA Space](./figures/regime-class/RegimesInPCA.png)
+![Regimes in PCA Space](../figures/regime-class/RegimesInPCA.png)
 
 
 
@@ -385,10 +385,10 @@ typically occurs in transitions in vol instead of at the very peak.
 These plots help show that KMeans regimes correspond to recognizable phases in
 microstructure changes rather than arbitrary partitions of data.
 
-![Time-Series Price With Regimes](./figures/regime-class/PriceWithKMeansRegimes.png)
+![Time-Series Price With Regimes](../figures/regime-class/PriceWithKMeansRegimes.png)
 
 
-![Time-Series Vol With Regimes](./figures/regime-class/24hRealizedVolWithRegimes.png)
+![Time-Series Vol With Regimes](../figures/regime-class/24hRealizedVolWithRegimes.png)
 
 ### Regimes and Return Distribution
 
