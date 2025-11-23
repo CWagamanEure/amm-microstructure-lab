@@ -3,7 +3,7 @@
 ## Intro
 
 This note applies unsupervised learning (KMeans clustering) to a Uniswap v3 USDC-WETH liquidity pool
-microstructure data- realized volatility, liquidity, LP flow features-to identify market regimes. This work was conducted
+microstructure data (realized volatility, liquidity, LP flow features) to identify market regimes. This work was conducted
 as a part of a broader project and work towards forecasting the Loss-Versus-Rebalancing (LVR) that
 informed arbitrageurs can extract from automated market makers at the expense of liquidity providers (LPs).
 In particular, LVR measures the performance gap between a passive LP position and a hypothetical
@@ -30,7 +30,7 @@ of a passive LP position in the pool and (ii) the value of a "rebalancing" portf
 that trades at external market prices to maintain the same notional exposure.
 It can be interpreted as an upper bound on the value that CEX-DEX arbitrageurs can
 extract from the pool, and a lower bound on the hidden cost borne by LPs due to 
-information asymetry and latency.
+information asymmetry and latency.
 
 Because LVR is tightly linked to price volatility and the amount and shape of
 liquidity in the pool, it is natural to ask whether we can identify recurring
@@ -277,7 +277,7 @@ Key Settings:
 - **Initialization:** multiple random centroid initializations to reduce
 sensitivity to starting points.
 - **Max iterations:** a fixed cap with early stopping.
-- **Random seed:** fixed `random_state` for reproducability.
+- **Random seed:** fixed `random_state` for reproducibility.
 
 ### Choosing the Number of Clusters
 
