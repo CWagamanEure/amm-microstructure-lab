@@ -406,9 +406,9 @@ These differences are not enough to claim a tradable edge by themselves, but the
 do suggest that the clustering is finding real variation in the distribution
 of future outcomes.
 
-## Predictive Tests: Do Regimes Help Forecsat Volatility?
+## Predictive Tests: Do Regimes Help Forecast Volatility?
 
-The clustering so far is purely unsupervised meaning that regimes are defined without
+The clustering so far is purely unsupervised, meaning that regimes are defined without
 actually looking at future outcomes. In order to test whether these regimes actually
 carry any information about *future* risk, I run a simple set of volatility 
 forecasting experiments.
@@ -416,7 +416,7 @@ forecasting experiments.
 ### Setup: Forward Realized Volatility
 
 Let $\mathrm{RV}^{(24h)}_t$ denote the 24-hour realized vol computed from hourly
-returns ending in time $t$, as defined earlier. I construct a forwards looking target
+returns ending at time $t$, as defined earlier. I construct a forward-looking target
 by shifting the series one step ahead:
 
 $$
@@ -425,7 +425,7 @@ $$
 \mathrm{RV}^{(24h)}_{\text{next 24 hours}}.
 $$
 
-This is stored as `rv_24h_fwd`.
+In the data this is stored as `rv_24h_fwd`.
 
 For each hour $t$, the predictors are:
 
@@ -433,7 +433,7 @@ For each hour $t$, the predictors are:
 - the one-hot regime indicators (e.g. `regime_normal_calm`, `regime_high_vol_breakout`,
   `regime_deep_liquidity_reconfig`), with one regime omitted as the baseline.
 
-I can then estimate a simple linear regression of the form:
+I then estimate a simple linear regression of the form:
 
 $$
 \mathrm{RV}^{(24h)}_{t+1}
@@ -444,7 +444,7 @@ $$
 where $D^{(1)}_t$ and $D^{(2)}_t$ are dummy variables for two of the regimes, and the omitted
 regime is the baseline.
 
-### Baseline: Vol clustering only
+### Baseline: Vol Clustering Only
 
 As a benchmark, I also regress forward 24h realized vol on current 24h realized vol
 alone:
@@ -486,21 +486,21 @@ Empirically, I find:
   1 percentage point in my runs), suggesting that regimes add some incremental information but do
   not radically change forecast accuracy.
 
-
 ### Forward Returns by Regime
 
 As another check, I also look at the distribution of *next-hour* returns by regime.
-For each regime, I compute the mean, std, and count of $r_{t+1}$, the log return over the next hour.
+For each regime, I compute the mean, standard deviation, and count of $r_{t+1}$, the log return
+over the next hour.
 
 In my results:
 
 - **normal_calm** shows the lowest forward-return vol and a slightly negative mean.
 - **high_vol_breakout** has the highest forward-return vol and a more negative mean,
-which is consistent with turbulent conditions where large moves are much more likely.
+  which is consistent with turbulent conditions where large moves are much more likely.
 - **deep_liquidity_reconfig** is once again associated with relatively high forward-return
-vol, but the estimates are very noisy because the regime is much more rare.
+  vol, but the estimates are very noisy because the regime is much more rare.
 
-These differences are not enough to claim a trading signal, but can capture the idea that
+These differences are not enough to claim a trading signal, but they capture the idea that
 the regimes find meaningful variation in future risk.
 
 
