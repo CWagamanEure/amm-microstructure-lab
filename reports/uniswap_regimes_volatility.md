@@ -406,18 +406,18 @@ These differences are not enough to claim a tradable edge by themselves, but the
 do suggest that the clustering is finding real variation in the distribution
 of future outcomes.
 
+
 ## Predictive Tests: Do Regimes Help Forecast Volatility?
 
-The clustering so far is purely unsupervised, meaning that regimes are defined without
-actually looking at future outcomes. In order to test whether these regimes actually
-carry any information about *future* risk, I run a simple set of volatility 
-forecasting experiments.
+The clustering so far is purely unsupervised, meaning that regimes are defined without actually
+looking at future outcomes. In order to test whether these regimes actually carry any information
+about *future* risk, I run a simple set of volatility forecasting experiments.
 
 ### Setup: Forward Realized Volatility
 
-Let $\mathrm{RV}^{(24h)}_t$ denote the 24-hour realized vol computed from hourly
-returns ending at time $t$, as defined earlier. I construct a forward-looking target
-by shifting the series one step ahead:
+Let $\mathrm{RV}^{(24h)}_t$ denote the 24-hour realized vol computed from hourly returns ending at
+time $t$, as defined earlier. I construct a forward-looking target by shifting the series one step
+ahead:
 
 $$
 \mathrm{RV}^{(24h)}_{t+1}
@@ -446,8 +446,7 @@ regime is the baseline.
 
 ### Baseline: Vol Clustering Only
 
-As a benchmark, I also regress forward 24h realized vol on current 24h realized vol
-alone:
+As a benchmark, I also regress forward 24h realized vol on current 24h realized vol alone:
 
 $$
 \mathrm{RV}^{(24h)}_{t+1}
@@ -471,7 +470,7 @@ $$
 + \varepsilon_t,
 $$
 
-where “normal_calm” is the omitted baseline regime.
+where `normal_calm` is the omitted baseline regime.
 
 Empirically, I find:
 
@@ -480,74 +479,73 @@ Empirically, I find:
 - The dummy for **high_vol_breakout** has a positive and statistically significant coefficient,
   showing that, controlling for the current level of volatility, being in a breakout regime
   is associated with higher forward realized volatility.
-- The dummy for **deep_liquidity_reconfig** is much weaker and statistically less robust, consistent
-  with that regime being rare and more about liquidity repositioning than just volatility spikes.
+- The dummy for **deep_liquidity_reconfig** is much weaker and statistically less robust,
+  consistent with that regime being rare and more about liquidity repositioning than just
+  volatility spikes.
 - The overall R-squared of the model increases modestly relative to the baseline (by roughly
   1 percentage point in my runs), suggesting that regimes add some incremental information but do
   not radically change forecast accuracy.
 
 ### Forward Returns by Regime
 
-As another check, I also look at the distribution of *next-hour* returns by regime.
-For each regime, I compute the mean, standard deviation, and count of $r_{t+1}$, the log return
-over the next hour.
+As another check, I also look at the distribution of *next-hour* returns by regime. For each regime,
+I compute the mean, standard deviation, and count of $r_{t+1}$, the log return over the next hour.
 
 In my results:
 
 - **normal_calm** shows the lowest forward-return vol and a slightly negative mean.
-- **high_vol_breakout** has the highest forward-return vol and a more negative mean,
-  which is consistent with turbulent conditions where large moves are much more likely.
-- **deep_liquidity_reconfig** is once again associated with relatively high forward-return
-  vol, but the estimates are very noisy because the regime is much more rare.
+- **high_vol_breakout** has the highest forward-return vol and a more negative mean, which is
+  consistent with turbulent conditions where large moves are much more likely.
+- **deep_liquidity_reconfig** is once again associated with relatively high forward-return vol,
+  but the estimates are very noisy because the regime is much more rare.
 
-These differences are not enough to claim a trading signal, but they capture the idea that
-the regimes find meaningful variation in future risk.
-
+These differences are not enough to claim a trading signal, but they capture the idea that the
+regimes find meaningful variation in future risk.
 
 ## Discussion, Relation to LVR, and Future Work
 
-This note is intentianally narrow in scope, capturing microstructure regimes in a
-single Uniswap v3 USDC-WETH pool and testing whether these regimes help to forecast
-realized volatility.
+This note is intentionally narrow in scope, capturing microstructure regimes in a single Uniswap v3
+USDC–WETH pool and testing whether these regimes help to forecast realized volatility.
 
 The main findings are:
 
-- KMeans clustering on a small set of volatility, volume, liquidity, and LP flow features
-can produce three interpretable regimes:
-  1. **normal_calm** background state
-  2. **high_vol_breakout** state during turbulent periods
-  3. **deep_liquidity_reconfig** state associated with large shifts in on-chain liquidity
-- In simple linear regression, most of the explained variation in forward 24h realized vol
-still comes from standard volatility clustering, but the **high_vol_breakout** regime adds
-a modest and statistically significant increment. It shows that being in this regime today
-is associated with higher vol tomorrow, even after accounting for naive clustering.
-- The **deep_liquidity_reconfig** regime seems to capture large changes in the pool's
-liquidity insead of just spikes in vol.
+- KMeans clustering on a small set of volatility, volume, liquidity, and LP flow features can
+  produce three interpretable regimes:
+  - `normal_calm` background state  
+  - `high_vol_breakout` state during turbulent periods  
+  - `deep_liquidity_reconfig` state associated with large shifts in on-chain liquidity  
+- In simple linear regression, most of the explained variation in forward 24h realized vol still
+  comes from standard volatility clustering, but the **high_vol_breakout** regime adds a modest and
+  statistically significant increment. Being in this regime today is associated with higher vol
+  tomorrow, even after accounting for the current volatility level.
+- The **deep_liquidity_reconfig** regime seems to capture large changes in the pool’s liquidity
+  instead of just spikes in volatility, and its incremental predictive power for volatility alone
+  is limited in this simple setup.
 
-From an LVR perspective, these results are still useful even if they do not 
-immediately yield a strong trading signal. LVR is closely linked to both price and vol
-and the shape and level of on-chain liquidity. The regimes identified here can be 
-viewed as low-dimensional **risk states**.
+From an LVR perspective, these results are still useful even if they do not immediately yield a
+strong trading signal. LVR is closely linked to both price volatility and the shape and level of
+on-chain liquidity. The regimes identified here can be viewed as low-dimensional **risk states**.
 
-A natural next step is to move from volatility to **direct LVR modelling**. This would
-involve:
+A natural next step is to move from volatility to **direct LVR modelling**. This would involve:
 
-- Computing LVR over rolling windows
-- Study distribution of LVR regimes, tails, and frequency of large events.
-- Estimate regime-aware LVR models, example:
-  - HAR-style models for LVR that also include lagged realized vol and regime dummies
-  - Possible separate params or even separate models per regime.
+- Computing LVR over rolling windows (e.g. 4h or 24h) for the same pool and sample period.  
+- Studying the distribution of LVR by regime: means, tails, and frequency of large LVR events.  
+- Estimating regime-aware LVR models, for example:
+  - HAR-style models for LVR that also include lagged realized vol and regime dummies.  
+  - Possible separate parameter sets or even separate models per regime, if sample sizes allow.  
 
 More advanced directions:
 
-- **HAR and HAR-X models** for realized vol and LVR, using realized vol, volume, and
-liquidity as predictors.
-- **Regime-switching or hidden Markov models (HMMs)** that treat the regime itself
-as a latent state with transition probs, instead of just having the fixed KMeans
-labels
-- Extension to multiple pools, fee tiers, and assets to test whether we still
-see similar regimes across Uniswap and other DEXs.
+- **HAR and HAR-X models** for realized vol and LVR, using realized vol, volume, and liquidity
+  as predictors.  
+- **Regime-switching or hidden Markov models (HMMs)** that treat the regime itself as a latent state
+  with transition probabilities, instead of just using fixed KMeans labels.  
+- Extensions to multiple pools, fee tiers, and assets to test whether we see similar regimes across
+  Uniswap v3 and other DEXs, or whether each pool has its own microstructure “personality.”  
 
+Overall, this initial regime analysis does not produce a complete LVR forecasting framework, but it
+provides useful scaffolding: a way to compress rich microstructure data into a small number of
+interpretable risk states that can be plugged into more sophisticated models in future work.
 
 ## References
 
