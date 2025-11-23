@@ -101,149 +101,143 @@ After parsing, I set the timestamp as the index and resample to 1-hour frequency
 
 ## Feature Enginering
 
-Given the hourly panel, I construct a set of microstructure features which are intended
-to summarize the "current state" of the USDC-WETH pool in each hour. These features
-are under three main categories: 
-1. Volatility and trend
-2. Trading activity
-3. Liquidity and LP behavior
+Given the hourly panel, I construct a set of microstructure features which are intended to summarize
+the "current state" of the USDC-WETH pool in each hour. These features are under three main
+categories:
+
+Volatility and trend  
+Trading activity  
+Liquidity and LP behavior
 
 ### Price, Returns, and Realized Vol
 
-Let \(P_t\) denote the hourly close price of WETH in units of USDC (USDC per 1 WETH),
-derived from the Uniswap v3 `sqrtPriceX96` field and token decimals. I work with log
-prices and log returns:
+Let $P_t$ denote the hourly close price of WETH in units of USDC (USDC per 1 WETH), derived from the
+Uniswap v3 sqrtPriceX96 field and token decimals. I work with log prices and log returns:
 
-- Log price:  
-  \[
-  \ell_t = \log P_t
-  \]
+Log price:  
+$\ell_t = \log P_t$
 
-- 1-hour log return:  
-  \[
-  r_t = \ell_t - \ell_{t-1}
-  \]
+1-hour log return:  
+$r_t = \ell_t - \ell_{t-1}$
 
 From these returns I construct simple realized volatility measures over rolling windows:
 
-- 4-hour realized volatility:
-  \[
-  \text{RV}^{(4h)}_t = \sqrt{\sum_{k=0}^{3} r_{t-k}^2}
-  \]
+4-hour realized volatility:  
+$$
+\text{RV}^{(4h)}_t = \sqrt{\sum_{k=0}^{3} r_{t-k}^2}
+$$
 
-- 24-hour realized volatility:
-  \[
-  \text{RV}^{(24h)}_t = \sqrt{\sum_{k=0}^{23} r_{t-k}^2}
-  \]
+24-hour realized volatility:  
+$$
+\text{RV}^{(24h)}_t = \sqrt{\sum_{k=0}^{23} r_{t-k}^2}
+$$
 
-These are equivalent to standard realized volatility measures used in high-frequency
-finance, but computed from hourly returns on the AMM mid-price.
+These are equivalent to standard realized volatility measures used in high-frequency finance, but
+computed from hourly returns on the AMM mid-price.
 
 ### Trend: Moving Averages and MA Ratio
 
-To capture slow versus fast prixe movement I compute the simple moving averages
-of the hourly close:
+To capture slow versus fast prixe movement I compute the simple moving averages of the hourly close:
 
-- 4-hour moving average:
-  \[
-  \text{MA}^{(4h)}_t = \frac{1}{4} \sum_{k=0}^{3} P_{t-k}
-  \]
+4-hour moving average:  
+$$
+\text{MA}^{(4h)}_t = \frac{1}{4} \sum_{k=0}^{3} P_{t-k}
+$$
 
-- 24-hour moving average:
-  \[
-  \text{MA}^{(24h)}_t = \frac{1}{24} \sum_{k=0}^{23} P_{t-k}
-  \]
+24-hour moving average:  
+$$
+\text{MA}^{(24h)}_t = \frac{1}{24} \sum_{k=0}^{23} P_{t-k}
+$$
 
-I then define a **moving-average ratio** as a scale-free trend indicator:
+I then define a moving-average ratio as a scale-free trend indicator:
 
-\[
+$$
 \text{MA\_ratio}_t = \frac{\text{MA}^{(4h)}_t}{\text{MA}^{(24h)}_t}.
-\]
+$$
 
-The values near one show short and long-horizon averages agree, while deviations
-above or below 1 show short-term moves away from the longer-run level.
+The values near one show short and long-horizon averages agree, while deviations above or below 1
+show short-term moves away from the longer-run level.
 
 ### Trading Activity: Volume and Swap Counts
 
 For each hour, I summarize swap activity into volume and counts:
 
-- **Hourly USD volume** \(\text{Vol}^{(1h)}_t\): sum of absolute traded notional,
-  computed by converting both legs of each swap into USDC using the prevailing
-  pool price and summing over all swaps in the hour.
+Hourly USD volume ($\text{Vol}^{(1h)}_t$): sum of absolute traded notional, computed by converting
+both legs of each swap into USDC using the prevailing pool price and summing over all swaps in the
+hour.
 
-- **Swap count**: the number of swaps in the hour.
+Swap count: the number of swaps in the hour.
 
-- **Average trade size in USD**:
-  \[
-  \text{AvgTradeSize}_t = 
-  \begin{cases}
-  \frac{\text{Vol}^{(1h)}_t}{\text{SwapCount}_t}, & \text{if SwapCount}_t > 0 \\
-  0, & \text{otherwise.}
-  \end{cases}
-  \]
+Average trade size in USD:  
+$$
+\text{AvgTradeSize}_t =
+\begin{cases}
+\frac{\text{Vol}^{(1h)}_t}{\text{SwapCount}_t}, & \text{if SwapCount}_t > 0 \\
+0, & \text{otherwise.}
+\end{cases}
+$$
 
-These features capture how “busy” the pool is and the typical size of trades in
-each microstructure state.
+These features capture how “busy” the pool is and the typical size of trades in each microstructure
+state.
 
 ### Liquidity Level and Liquidity Volatility
 
-On Uniswap v3, the on-chain `liquidity` field reflects the amount of active liquidity
-in the current price range. For each hour I compute:
+On Uniswap v3, the on-chain liquidity field reflects the amount of active liquidity in the current
+price range. For each hour I compute:
 
-- **Liquidity level**: last observed on-chain liquidity in the hour, denoted
-  \(\text{Liq}_t\).
+Liquidity level: last observed on-chain liquidity in the hour, denoted $\text{Liq}_t$.
 
-- **Absolute liquidity change**:
-  \[
-  \Delta \text{Liq}_t = \text{Liq}_t - \text{Liq}_{t-1}.
-  \]
+Absolute liquidity change:  
+$$
+\Delta \text{Liq}_t = \text{Liq}_t - \text{Liq}_{t-1}.
+$$
 
-- **Relative liquidity change** (when \(\text{Liq}_{t-1} > 0\)):
-  \[
-  \Delta \text{Liq}^{(\text{rel})}_t = \frac{\text{Liq}_t - \text{Liq}_{t-1}}{\text{Liq}_{t-1}}.
-  \]
+Relative liquidity change (when $\text{Liq}_{t-1} > 0$):  
+$$
+\Delta \text{Liq}^{(\text{rel})}_t = \frac{\text{Liq}_t - \text{Liq}_{t-1}}{\text{Liq}_{t-1}}.
+$$
 
-- **24-hour liquidity volatility**: a rolling standard deviation of relative changes:
-  \[
-  \text{LiqVol}^{(24h)}_t = \text{StdDev}\left( \Delta \text{Liq}^{(\text{rel})}_{t-k} \right)_{k=0}^{23}.
-  \]
+24-hour liquidity volatility: a rolling standard deviation of relative changes:  
+$$
+\text{LiqVol}^{(24h)}_t =
+\text{StdDev}\left( \Delta \text{Liq}^{(\text{rel})}_{t-k} \right)_{k=0}^{23}.
+$$
 
-Intuitively, \(\text{Liq}_t\) measures how deep the pool is at time \(t\), while
-\(\text{LiqVol}^{(24h)}_t\) measures how much that depth has been changing over the
-past day.
+Intuitively, $\text{Liq}_t$ measures how deep the pool is at time $t$, while
+$\text{LiqVol}^{(24h)}_t$ measures how much that depth has been changing over the past day.
 
 ### LP Activity: Mint/Burn Events and Net Flows
 
 From the mint and burn events I construct LP flow features:
 
-- **Mint and burn counts**:
-  - \(\text{MintCount}_t\): number of Mint events in hour \(t\).
-  - \(\text{BurnCount}_t\): number of Burn events in hour \(t\).
+Mint and burn counts:
 
-- **Token amounts (hourly sums)**:
-  - \(\text{MintAmt0}_t, \text{MintAmt1}_t\): total token0/token1 supplied by LPs.
-  - \(\text{BurnAmt0}_t, \text{BurnAmt1}_t\): total token0/token1 withdrawn.
+$\text{MintCount}_t$: number of Mint events in hour $t$.  
+$\text{BurnCount}_t$: number of Burn events in hour $t$.
 
-- **Net LP flow per token**:
-  \[
-  \text{NetAmt0}_t = \text{MintAmt0}_t - \text{BurnAmt0}_t, \quad
-  \text{NetAmt1}_t = \text{MintAmt1}_t - \text{BurnAmt1}_t.
-  \]
+Token amounts (hourly sums):
 
-- **Total LP event count**:
-  \[
-  \text{LPEventCount}_t = \text{MintCount}_t + \text{BurnCount}_t.
-  \]
+$\text{MintAmt0}_t, \text{MintAmt1}_t$: total token0/token1 supplied by LPs.  
+$\text{BurnAmt0}_t, \text{BurnAmt1}_t$: total token0/token1 withdrawn.
 
-In some plots and experiments I also scale net token flows into approximate USD
-terms using the pool price, to interpret them as net capital entering or leaving
-the pool.
+Net LP flow per token:  
+$$
+\text{NetAmt0}_t = \text{MintAmt0}_t - \text{BurnAmt0}_t, \quad
+\text{NetAmt1}_t = \text{MintAmt1}_t - \text{BurnAmt1}_t.
+$$
+
+Total LP event count:  
+$$
+\text{LPEventCount}_t = \text{MintCount}_t + \text{BurnCount}_t.
+$$
+
+In some plots and experiments I also scale net token flows into approximate USD terms using the
+pool price, to interpret them as net capital entering or leaving the pool.
 
 ### Microstructure State Vector Used for Clustering
 
-In the clustering step, I focus on a subset of these features that jointly describe
-volatility, trading intensity, depth, and LP activity. The **microstructure state
-vector** for each hour \(t\) is:
+In the clustering step, I focus on a subset of these features that jointly describe volatility,
+trading intensity, depth, and LP activity. The microstructure state vector for each hour $t$ is:
 
 $$
 x_t = \big(
@@ -256,7 +250,7 @@ x_t = \big(
 \big).
 $$
 
-Before applying KMeans, I standardize each component of \(x_t\) to zero mean and unit variance.
-This prevents features with large numerical scales (such as liquidity or volume) from
-dominating the clustering purely due to their units, and encourages the algorithm to
-group hours based on genuine structure rather than raw magnitudes.
+Before applying KMeans, I standardize each component of $x_t$ to zero mean and unit variance. This
+prevents features with large numerical scales (such as liquidity or volume) from dominating the
+clustering purely due to their units, and encourages the algorithm to group hours based on genuine
+structure rather than raw magnitudes.
