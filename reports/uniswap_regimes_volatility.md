@@ -452,7 +452,6 @@ $$
 
 
 This captures the usual “volatility clustering” effect: high volatility today tends to be followed by high volatility tomorrow. In my sample, this simple model already explains a non-trivial share of the variation in $\mathrm{RV}^{(24h)}_{t+1}$ (R-squared in the low 0.4s), and the coefficient $\beta_{\text{base}}$ is strongly positive and statistically significant.
-Next, I augment the baseline with the regime indicators. With three regimes in total, this becomes:
 
 $$
 \mathrm{RV}^{(24h)}_{t+1}
