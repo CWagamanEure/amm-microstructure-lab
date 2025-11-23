@@ -121,12 +121,12 @@ From these returns I construct simple realized volatility measures over rolling 
 
 4-hour realized volatility:  
 $$
-\text{RV}^{(4h)}_t = \sqrt{\sum_{k=0}^{3} r_{t-k}^2}
+\mathrm{RV}^{(4h)}_t = \sqrt{\sum_{k=0}^{3} r_{t-k}^2}
 $$
 
 24-hour realized volatility:  
 $$
-\text{RV}^{(24h)}_t = \sqrt{\sum_{k=0}^{23} r_{t-k}^2}
+\mathrm{RV}^{(24h)}_t = \sqrt{\sum_{k=0}^{23} r_{t-k}^2}
 $$
 
 These are equivalent to standard realized volatility measures used in high-frequency finance, but computed from hourly returns on the AMM mid-price.
@@ -137,35 +137,35 @@ To capture slow versus fast prixe movement I compute the simple moving averages 
 
 4-hour moving average:  
 $$
-\text{MA}^{(4h)}_t = \frac{1}{4} \sum_{k=0}^{3} P_{t-k}
+\mathrm{MA}^{(4h)}_t = \frac{1}{4} \sum_{k=0}^{3} P_{t-k}
 $$
 
 24-hour moving average:  
 $$
-\text{MA}^{(24h)}_t = \frac{1}{24} \sum_{k=0}^{23} P_{t-k}
+\mathrm{MA}^{(24h)}_t = \frac{1}{24} \sum_{k=0}^{23} P_{t-k}
 $$
 
 I then define a moving-average ratio as a scale-free trend indicator:
 
 $$
-\text{MA\_ratio}_t = \frac{\text{MA}^{(4h)}_t}{\text{MA}^{(24h)}_t}.
+R^{\mathrm{MA}}_t = \frac{\mathrm{MA}^{(4h)}_t}{\mathrm{MA}^{(24h)}_t}.
 $$
 
-The values near one show short and long-horizon averages agree, while deviations above or below 1 show short-term moves away from the longer-run level.
+In the code, this quantity is stored in the column `ma_ratio`. The values near one show short and long-horizon averages agree, while deviations above or below 1 show short-term moves away from the longer-run level.
 
 ### Trading Activity: Volume and Swap Counts
 
 For each hour, I summarize swap activity into volume and counts:
 
-Hourly USD volume ($\text{Vol}^{(1h)}_t$): sum of absolute traded notional, computed by converting both legs of each swap into USDC using the prevailing pool price and summing over all swaps in the hour.
+Hourly USD volume $\mathrm{Vol}^{(1h)}_t$: sum of absolute traded notional, computed by converting both legs of each swap into USDC using the prevailing pool price and summing over all swaps in the hour.
 
 Swap count: the number of swaps in the hour.
 
 Average trade size in USD:  
 $$
-\text{AvgTradeSize}_t =
+\mathrm{AvgTradeSize}_t =
 \begin{cases}
-\frac{\text{Vol}^{(1h)}_t}{\text{SwapCount}_t}, & \text{if SwapCount}_t > 0 \\
+\dfrac{\mathrm{Vol}^{(1h)}_t}{\mathrm{SwapCount}_t}, & \text{if } \mathrm{SwapCount}_t > 0, \\
 0, & \text{otherwise.}
 \end{cases}
 $$
@@ -174,27 +174,27 @@ These features capture how “busy” the pool is and the typical size of trades
 
 ### Liquidity Level and Liquidity Volatility
 
-On Uniswap v3, the on-chain liquidity field reflects the amount of active liquidity in the current price range. For each hour I compute:
+On Uniswap v3, the on-chain `liquidity` field reflects the amount of active liquidity in the current price range. For each hour I compute:
 
-Liquidity level: last observed on-chain liquidity in the hour, denoted $\text{Liq}_t$.
+Liquidity level: last observed on-chain liquidity in the hour, denoted $\mathrm{Liq}_t$.
 
 Absolute liquidity change:  
 $$
-\Delta \text{Liq}_t = \text{Liq}_t - \text{Liq}_{t-1}.
+\Delta \mathrm{Liq}_t = \mathrm{Liq}_t - \mathrm{Liq}_{t-1}.
 $$
 
-Relative liquidity change (when $\text{Liq}_{t-1} > 0$):  
+Relative liquidity change (when $\mathrm{Liq}_{t-1} > 0$):  
 $$
-\Delta \text{Liq}^{(\text{rel})}_t = \frac{\text{Liq}_t - \text{Liq}_{t-1}}{\text{Liq}_{t-1}}.
+\Delta \mathrm{Liq}^{(\mathrm{rel})}_t = \frac{\mathrm{Liq}_t - \mathrm{Liq}_{t-1}}{\mathrm{Liq}_{t-1}}.
 $$
 
 24-hour liquidity volatility: a rolling standard deviation of relative changes:  
 $$
-\text{LiqVol}^{(24h)}_t =
-\text{StdDev}\left( \Delta \text{Liq}^{(\text{rel})}_{t-k} \right)_{k=0}^{23}.
+\mathrm{LiqVol}^{(24h)}_t =
+\mathrm{StdDev}\left( \Delta \mathrm{Liq}^{(\mathrm{rel})}_{t-k} \right)_{k=0}^{23}.
 $$
 
-Intuitively, $\text{Liq}_t$ measures how deep the pool is at time $t$, while $\text{LiqVol}^{(24h)}_t$ measures how much that depth has been changing over the past day.
+Intuitively, $\mathrm{Liq}_t$ measures how deep the pool is at time $t$, while $\mathrm{LiqVol}^{(24h)}_t$ measures how much that depth has been changing over the past day.
 
 ### LP Activity: Mint/Burn Events and Net Flows
 
@@ -202,23 +202,23 @@ From the mint and burn events I construct LP flow features:
 
 Mint and burn counts:
 
-- $\text{MintCount}_t$: number of Mint events in hour $t$.  
-- $\text{BurnCount}_t$: number of Burn events in hour $t$.
+- $\mathrm{MintCount}_t$: number of Mint events in hour $t$.  
+- $\mathrm{BurnCount}_t$: number of Burn events in hour $t$.
 
 Token amounts (hourly sums):
 
-- $\text{MintAmt0}_t, \text{MintAmt1}_t$: total token0/token1 supplied by LPs.  
-- $\text{BurnAmt0}_t, \text{BurnAmt1}_t$: total token0/token1 withdrawn.
+- $\mathrm{MintAmt0}_t, \mathrm{MintAmt1}_t$: total token0/token1 supplied by LPs.  
+- $\mathrm{BurnAmt0}_t, \mathrm{BurnAmt1}_t$: total token0/token1 withdrawn.
 
 Net LP flow per token:  
 $$
-\text{NetAmt0}_t = \text{MintAmt0}_t - \text{BurnAmt0}_t, \quad
-\text{NetAmt1}_t = \text{MintAmt1}_t - \text{BurnAmt1}_t.
+\mathrm{NetAmt0}_t = \mathrm{MintAmt0}_t - \mathrm{BurnAmt0}_t, \quad
+\mathrm{NetAmt1}_t = \mathrm{MintAmt1}_t - \mathrm{BurnAmt1}_t.
 $$
 
 Total LP event count:  
 $$
-\text{LPEventCount}_t = \text{MintCount}_t + \text{BurnCount}_t.
+\mathrm{LPEventCount}_t = \mathrm{MintCount}_t + \mathrm{BurnCount}_t.
 $$
 
 In some plots and experiments I also scale net token flows into approximate USD terms using the pool price, to interpret them as net capital entering or leaving the pool.
@@ -229,12 +229,12 @@ In the clustering step, I focus on a subset of these features that jointly descr
 
 $$
 x_t = \big(
-\text{RV}^{(24h)}_t,\ 
-\text{MA\_ratio}_t,\ 
-\text{Vol}^{(1h)}_t,\ 
-\text{Liq}_t,\ 
-\text{LiqVol}^{(24h)}_t,\ 
-\text{LPEventCount}_t
+\mathrm{RV}^{(24h)}_t,\ 
+R^{\mathrm{MA}}_t,\ 
+\mathrm{Vol}^{(1h)}_t,\ 
+\mathrm{Liq}_t,\ 
+\mathrm{LiqVol}^{(24h)}_t,\ 
+\mathrm{LPEventCount}_t
 \big).
 $$
 
