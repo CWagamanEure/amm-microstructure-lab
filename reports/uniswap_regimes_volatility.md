@@ -456,24 +456,10 @@ is the baseline.
 
 As a benchmark, I also regress forward 24h realized vol on current 24h realized vol alone:
 
-$$
-\mathrm{RV}^{(24h)}_{t+1}
-= \alpha_{\text{base}} + \beta_{\text{base}} \,\mathrm{RV}^{(24h)}_t + \varepsilon_t.
-$$
-
-
-
 This captures the usual “volatility clustering” effect: high volatility today tends to be followed
 by high volatility tomorrow. In my sample, this simple model already explains a non-trivial share of
 the variation (R-squared in the low 0.4s), and the coefficient is strongly positive and statistically significant.
 
-$$
-\mathrm{RV}^{(24h)}_{t+1}
-= \alpha + \beta \,\mathrm{RV}^{(24h)}_t + \gamma_1 D^{(1)}_t + \gamma_2 D^{(2)}_t + \varepsilon_t.
-$$
-
-Here $D^{(1)}_t$ is the dummy for the `high_vol_breakout` regime and $D^{(2)}_t$ is the dummy
-for the `deep_liquidity_reconfig` regime, with `normal_calm` as the omitted baseline.
 Empirically, I find:
 
 - The coefficient on current volatility $\beta$ remains large and highly significant: volatility
