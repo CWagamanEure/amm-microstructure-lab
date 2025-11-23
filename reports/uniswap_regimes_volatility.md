@@ -432,12 +432,10 @@ For each hour $t$, the predictors are:
 
 I then estimate a simple linear regression of the form:
 
+
 $$
 \mathrm{RV}^{(24h)}_{t+1}
-= \alpha + \beta \,\mathrm{RV}^{(24h)}_t
-+ \gamma_1 D^{(1)}_t
-+ \gamma_2 D^{(2)}_t
-+ \varepsilon_t.
+= \alpha_{\text{base}} + \beta_{\text{base}} \,\mathrm{RV}^{(24h)}_t + \varepsilon_t.
 $$
 
 Here $D^{(1)}_t$ and $D^{(2)}_t$ are dummy variables for two of the regimes, and the omitted regime
@@ -464,10 +462,7 @@ Next, I augment the baseline with the regime indicators. With three regimes in t
 
 $$
 \mathrm{RV}^{(24h)}_{t+1}
-= \alpha + \beta \,\mathrm{RV}^{(24h)}_t
-+ \gamma_1 D^{(1)}_t
-+ \gamma_2 D^{(2)}_t
-+ \varepsilon_t.
+= \alpha + \beta \,\mathrm{RV}^{(24h)}_t + \gamma_1 D^{(1)}_t + \gamma_2 D^{(2)}_t + \varepsilon_t.
 $$
 
 Here $D^{(1)}_t$ is the dummy for the `high_vol_breakout` regime and $D^{(2)}_t$ is the dummy
