@@ -433,12 +433,20 @@ For each hour $t$, the predictors are:
 - the one-hot regime indicators (e.g. `regime_normal_calm`, `regime_high_vol_breakout`,
   `regime_deep_liquidity_reconfig`), with one regime omitted as the baseline.
 
-I then estimate a simple linear regression of the form:
+I then estimate two linear regressions.
 
+**Baseline model (volatility clustering only):**
 
 $$
 \mathrm{RV}^{(24h)}_{t+1}
 = \alpha_{\text{base}} + \beta_{\text{base}} \,\mathrm{RV}^{(24h)}_t + \varepsilon_t.
+$$
+
+**Augmented model (with regimes):**
+
+$$
+\mathrm{RV}^{(24h)}_{t+1}
+= \alpha + \beta \,\mathrm{RV}^{(24h)}_t + \gamma_1 D^{(1)}_t + \gamma_2 D^{(2)}_t + \varepsilon_t.
 $$
 
 Here $D^{(1)}_t$ and $D^{(2)}_t$ are dummy variables for two of the regimes, and the omitted regime
